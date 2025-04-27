@@ -5,6 +5,12 @@
 - Shaka Y.J. Li @davidycliao（美國佛羅里達州立大學政治系博士生）
 - 廖彥傑 David @shaka9487 （英國伯明翰大學政府學院與人工智能中心研究人員）
 
+
+## 主要資料與教材
+
+[script](https://github.com/davidycliao/r-ladies-tpe-legistaiwan/blob/main/r-ladies.Rmd) | [slides](https://raw.githack.com/davidycliao/r-ladies-tpe-legistaiwan/main/r-ladies.pdf)
+
+
 ## 簡介
 
 legisTaiwan 是一個專為分析台灣立法院數據所開發的 R 套件，歐噴公司開發的立法院國會API。它提供了一系列功能，讓使用者能夠輕鬆獲取、處理和分析台灣國會的立法數據，包括：
@@ -28,11 +34,6 @@ devtools::install_github("davidycliao/legisTaiwan")
 # 載入套件
 library(legisTaiwan)
 ```
-
-## 主要資料與教材
-
-- script: [r-ladies.Rmd]()
-- slides: [r-ladies.pdf](https://raw.githack.com/davidycliao/r-ladies-tpe-legistaiwan/main/r-ladies.pdf)
 
 ## 相關連結
 
