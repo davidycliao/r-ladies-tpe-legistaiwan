@@ -101,7 +101,7 @@ __Legislator Information:__
 __How to Explore Functions?__
 
 ```{r}
-# 取得並解析立法院議案資料
+# 取得並立法院議案資料
 ?get_ly_bills()
 
 # 取得立法院委員會會議資料
@@ -181,6 +181,7 @@ lady <- get_ly_bills(page = 1,
 
 ```{r include=FALSE}
 load("../quantitative-text-analysis/pre-run/lady.RData")
+load("../quantitative-text-analysis/pre-run/bill_data_term10.RData")
 ```
 
 
@@ -263,7 +264,7 @@ bills_term10_list <- lapply(1:100, function(page) {
 # bind_rows所有頁資料
 bills_term10 <- bind_rows(bills_term10_list)
 
-# 正規化「提案單位」名稱
+# Normalize「提案單位」名稱
 bills_term10 <- bills_term10 %>%
   mutate(提案單位 = 
            str_replace_all(提案單位, "本院民众黨黨團", "本院台灣民众黨黨團"))
@@ -279,20 +280,36 @@ __Changes in the Number of Bills Proposed by TPP Across Different Sessions (10th
 ```{r, echo=TRUE, eval=FALSE}
 library(stringr)
 # 按會期、提案單位統計數量
-bills_by_origin <- bills_term10 %>%
-  group_by(會期, 提案單位) %>%
-  summarise(count = n(), .groups = 'drop') %>%
-  arrange(會期, desc(count))
+bills_by_quarter10 <- bills_term10 %>%
+  # 1. 轉成 Date，並抽出「年-季」欄位
+  mutate(
+    最新進度日期 = as.Date(最新進度日期),
+    year_quarter = paste0(year(最新進度日期), "-Q", quarter(最新進度日期))
+  ) %>%
+  # 2. 改用 year_quarter 來分組
+  group_by(year_quarter, 提案單位) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  # 3. 排序：先照年-季，再照數量降冪
+  arrange(year_quarter, desc(count))
 
+```
+
+---
+
+__Changes in the Number of Bills Proposed by TPP Across Different Sessions (10th Term)__
+
+```{r, echo=TRUE, eval=FALSE}
 # 篩選包含「黨團」的提案單位
-bills_party <- bills_by_origin %>%
+bills_party_10 <- bills_by_quarter10 %>%
   filter(str_detect(提案單位, "黨團"))
 
 # 進一步篩選「本院台灣民众黨黨團」
-minzhongdang_term10 <- bills_party %>%
+minzhongdang_term10 <- bills_party_10 %>%
   filter(str_detect(提案單位, "本院台灣民众黨黨團"))
-```
 
+# Merge第10、11屆民众黨提案數量資料
+mzd <- rbind(minzhongdang_term10, minzhongdang_term11)
+```
 
 ---
 
@@ -304,19 +321,24 @@ __Changes in the Number of Bills Proposed by TPP Across Different Sessions (10th
 
 ```{r, echo=TRUE, eval=FALSE, results='hide'}
 library(ggplot2)
-ggplot(minzhongdang_term10, aes(x = 會期, y = count)) +
-  geom_line(color = "blue", size = 1) +  
-  geom_point(color = "red", size = 2) +   
+
+ggplot(mzd, aes(year_quarter, count, fill = year_quarter)) +
+  geom_col(width = 0.7) +
+  geom_text(aes(label = count), vjust = -0.3, family = "Heiti TC", 
+            fontface = "bold") +
+  scale_fill_viridis_d("magma") +
+  scale_y_continuous(expand = expansion(c(0, .1))) +
   labs(
-    title = "台灣民众黨在不同會期的提案數量變化(第十屆)",
-    x = "會期",
-    y = "提案數量") +
-  theme_minimal() + 
-  theme(text = element_text(family = "Heiti TC Light")) +
-  scale_x_continuous(breaks = 
-                       seq(min(minzhongdang_term10$會期),
-                           max(minzhongdang_term10$會期),
-                                  by = 1))
+    title = "台灣民眾黨在不同季度提案數量變化（第10、11屆）",
+    x     = "季度",
+    y     = "提案數量") +
+  theme_minimal(base_family = "Heiti TC", base_size = 14) +
+  theme(
+    plot.title      = element_text(face = "bold", hjust = 0.5),
+    axis.title      = element_text(face = "bold"),
+    axis.text.x     = element_text(angle = 45, hjust = 1),
+    legend.position = "none")
+## ggsave("figures/yourname.png", plot = p, width = 10, height = 8, dpi = 100)
 ```
 
 ---
@@ -472,10 +494,12 @@ __Legislators with More Than 40 Attendances in Committee 35__
 library(showtext)
 showtext_auto()
 
-p <- ggplot(attendees_count_40, aes(x = reorder(出席委員, count), y = count)) +
+p <- ggplot(attendees_count_40, 
+            aes(x = reorder(出席委員, count), y = count)) +
   geom_col(aes(fill = 出席委員), width = 0.7) +
   scale_fill_viridis_d(option = "turbo") +
-  geom_text(aes(label = count), vjust = -0.5, size = 4, family = "Heiti TC", fontface = "bold") +  
+  geom_text(aes(label = count), vjust = -0.5, size = 4, 
+            family = "Heiti TC", fontface = "bold") +  
   theme_minimal(base_family = "Heiti TC", base_size = 14) +
   labs(x = "立法委員", y = "出席次數" ) +
   theme(
@@ -484,7 +508,7 @@ p <- ggplot(attendees_count_40, aes(x = reorder(出席委員, count), y = count)
     axis.text = element_text(size = 12),
     axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
     legend.position = "none"
-  )
+    )
 # ggsave("figures/40.png", plot = p, width = 10, height = 8, dpi = 100)
 ```
 
@@ -570,7 +594,7 @@ filtered_df <- bill_data[grep(
 
 ---
 
-## Case Study IV: Network Analysis based on Bill Co-occurrence (1/6)
+## Case Study IV: Network Analysis based on Bill Co-occurrence (1/9)
 
 
 __View Selected Bills/Amendments__
@@ -582,7 +606,7 @@ head(filtered_df[c("billName", "billCosignatory")], n =2)
 
 ---
 
-## Case Study IV: Network Analysis based on Bill Co-occurrence (1/6)
+## Case Study IV: Network Analysis based on Bill Co-occurrence (2/9)
 
 __Convert Bills to `igraph` Matrix with `bill_to_network()`__
 
@@ -598,7 +622,7 @@ network_result <- bill_to_network(filtered_df,
                                   verbose = FALSE)
 ```
 
-## Case Study IV: Network Analysis based on Bill Co-occurrence (1/6)
+## Case Study IV: Network Analysis based on Bill Co-occurrence (3/9)
 
 __Merge with Party ID from legisTaiwan__
 
@@ -646,7 +670,7 @@ party_colors <- c(
 
 ---
 
-## Case Study IV: Network Analysis based on Bill Co-occurrence (1/6)
+## Case Study IV: Network Analysis based on Bill Co-occurrence (4/9)
 
 __Create the Network Object with  with as_tbl_graph__
 
@@ -670,7 +694,7 @@ tg <- tg |>
 
 ---
 
-## Case Study IV: Network Analysis based on Bill Co-occurrence (1/6)
+## Case Study IV: Network Analysis based on Bill Co-occurrence (5/9)
 
 
 __Create the Network Visualization with ggraph__
@@ -687,7 +711,7 @@ p
 
 ---
 
-## Case Study IV: Network Analysis based on Bill Co-occurrence (1/6)
+## Case Study IV: Network Analysis based on Bill Co-occurrence (6/9)
 
 ```{r include=TRUE}
 library(showtext)
@@ -705,7 +729,7 @@ p <- p + geom_node_point(aes(size = connections,
 
 ---
 
-## Case Study IV: Network Analysis based on Bill Co-occurrence (1/6)
+## Case Study IV: Network Analysis based on Bill Co-occurrence (7/9)
 
 
 ```{r warning=FALSE, include=TRUE, echo=FALSE, fig.width=10, fig.height=7, out.width="100%"}
@@ -717,7 +741,7 @@ p
 
 --- 
 
-## Case Study IV: Network Analysis based on Bill Co-occurrence (1/6)
+## Case Study IV: Network Analysis based on Bill Co-occurrence (8/9)
 
 __Adding `ggplot` Layers __
 
@@ -741,7 +765,7 @@ p <- p +  scale_color_manual(values = party_colors, name = "政黨") +
 
 --- 
 
-## Case Study IV: Network Analysis based on Bill Co-occurrence (1/6)
+## Case Study IV: Network Analysis based on Bill Co-occurrence (9/9)
 
 
 ```{r warning=FALSE, include=TRUE, echo=FALSE, fig.width=10, fig.height=7, out.width="100%"}
