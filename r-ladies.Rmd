@@ -182,6 +182,9 @@ lady <- get_ly_bills(page = 1,
 ```{r include=FALSE}
 load("../quantitative-text-analysis/pre-run/lady.RData")
 load("../quantitative-text-analysis/pre-run/bill_data_term10.RData")
+load("../quantitative-text-analysis/pre-run/mzd_10.RData")
+load("../quantitative-text-analysis/pre-run/mzd_11.RData")
+load("../quantitative-text-analysis/pre-run/mzd.RData")
 ```
 
 
@@ -279,6 +282,7 @@ __Changes in the Number of Bills Proposed by TPP Across Different Sessions (10th
 
 ```{r, echo=TRUE, eval=FALSE}
 library(stringr)
+library(lubridate)
 # 按會期、提案單位統計數量
 bills_by_quarter10 <- bills_term10 %>%
   # 1. 轉成 Date，並抽出「年-季」欄位

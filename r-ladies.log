@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.8.28)  27 APR 2025 20:44
+This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.8.28)  28 APR 2025 02:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1843,7 +1843,7 @@ LaTeX Font Warning: Font shape `TU/lmtt/bx/it' in size <8> not available
 File: figures/tpp.png Graphic file (type bmp)
 <figures/tpp.png>
 
-Overfull \hbox (15.36542pt too wide) in paragraph at lines 586--586
+Overfull \hbox (15.36542pt too wide) in paragraph at lines 587--587
  [] 
  []
 
@@ -1874,7 +1874,7 @@ anguage=dflt;!
 
 ]
 LaTeX Font Info:    Font shape `TU/Atkinson-Hyperlegible(0)/m/it' will be
-(Font)              scaled to size 8.0pt on input line 684.
+(Font)              scaled to size 8.0pt on input line 685.
 Package microtype Info: Character `textendash ' is missing
 (microtype)             in font `TU/Atkinson-Hyperlegible(0)/m/it/8'.
 (microtype)             Ignoring protrusion settings for this character.
@@ -1896,7 +1896,7 @@ Package microtype Info: Character `textquotedblright ' is missing
 File: figures/china.png Graphic file (type bmp)
 <figures/china.png>
 
-Overfull \hbox (15.36542pt too wide) in paragraph at lines 684--684
+Overfull \hbox (15.36542pt too wide) in paragraph at lines 685--685
  [] 
  []
 
@@ -1963,7 +1963,7 @@ anguage=dflt;!
 File: figures/bill_cosigner.png Graphic file (type bmp)
 <figures/bill_cosigner.png>
 
-Overfull \hbox (15.36542pt too wide) in paragraph at lines 845--845
+Overfull \hbox (15.36542pt too wide) in paragraph at lines 846--846
  [] 
  []
 
